@@ -16,9 +16,20 @@ function Machine(power) {
 function Fridge(power){
 	Machine.apply(this, arguments);
 	var food = [];
-
+	var parentDisable = this.disable;
 	this.getCopacity = function(){
 		return this._power / 100;
+	}
+
+	this.clean = function(){
+		food = [];
+	}
+
+	this.disable = function(){
+		if(food.length > 0)
+			throw new Error('You can\'t turn off frige with food')
+		parentDisable.call(this);
+		return true;
 	}
 
 	this.addFood = function(){
@@ -30,6 +41,25 @@ function Fridge(power){
 			food.push(arguments[i])
 		}
 		return this;
+	}
+
+	this.filter = function(callback){
+		var arr = [];
+		food.forEach(function(item){
+			if ( callback(item) ) {
+				arr.push(item)
+			}
+		})
+		return arr;
+	}
+
+	this.removeFood = function(){
+		for (var i = arguments.length - 1; i >= 0; i--) {
+			var index = food.indexOf(arguments[i]);
+			if( index !== -1 ){
+				food.splice(index, 1)
+			}
+		}
 	}
 
 	this.getFood = function(){
